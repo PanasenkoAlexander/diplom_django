@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+<!-- Подключение папки static -->
+{% load static %}
+
+{% block title %}Каталог{% endblock %}
+
+{% block body %}
+<div class="container text-center">
+    <h2><b>Каталог товаров</b></h2>
+    <br>
+
+    {% if product_list %}
+    <!--        <div class="d-flex flex-wrap">-->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for product in product_list %}
+        <div class="col">
+            <div class="card mx-auto h-100" style="width: 18rem;">
+                <a href="{{ product.get_absolute_url }}">
+                    <img src="/media/{{ product.image }}" class="card-img-top" alt="image.url">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title"><b>{{ product.title }}</b></h5>
+                    <h6 class="card-text">Производитель: {{ product.company }}</h6>
+                    <h6 class="card-text">{{ product.view }} ({{ product.side}})</h6>
+                    <h6 class="card-text">Цена: {{ product.price }}$</h6>
+                    <p class="card-text">{{ product.summary }}</p>
+                    <a href="{{ product.get_absolute_url }}" class="btn btn-warning btn-sm">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        <br>
+        {% endfor %}
+    </div>
+    <!--    </div>-->
+    {% else %}
+    <h2>Записи в БД отсутствуют</h2>
+    {% endif %}
+    <br>
+    <!-- Кнопки перехода между страницами -->
+    <!-- request.path - текущий URl страницы -->
+    <!-- page_obj.has_previous/has_next - Есть ли страница (True) -->
+    <!-- page_obj.previous_page_number/next_page_number - Возвращают цифру предыдущей или следующей страницы соответственно -->
+    <div class="btn-group" role="group" aria-label="Second group">
+        {% if page_obj.has_previous %}
+        <a class="btn btn-sm btn-dark" href="{{ request.path }}?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+        {% else %}
+        <a class="btn btn-sm btn-dark" href="#">Предыдущая</a>
+        {% endif %}
+        <!-- Нумерация страниц-->
+        <a class="btn btn-sm btn-dark" href="#">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</a>
+        {% if page_obj.has_next %}
+        <a class="btn btn-sm btn-dark" href="{{ request.path }}?page={{ page_obj.next_page_number }}">Следующая</a>
+        {% else %}
+        <a class="btn btn-sm btn-dark" href="#">Следующая</a>
+        {% endif %}
+    </div>
+</div>
+<br>
+{% endblock %}

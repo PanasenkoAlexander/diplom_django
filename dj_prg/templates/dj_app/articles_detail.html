@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+<!-- Подключение папки static -->
+{% load static %}
+
+{% block title %}{{ articles.title }}{% endblock %}
+
+{% block body %}
+<!--<br>-->
+<div class="container text-left">
+     {% if user.is_authenticated %}
+        {% if user.get_username == "admin" %}
+        <div class="card mb-1">
+          <img src="{% static 'img/artic1.jpg' %}" class="card-img-top">
+          <div class="card-body">
+            <p class="card-text"><small class="text-body-secondary"><i>Материал опубликован {{ articles.date }}</i></small></p>
+            <h4 class="card-text">{{ articles.anons }}</h4>
+            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, fugit, possimus? Ad adipisci debitis distinctio est. Aperiam dolore fugiat fugit impedit laboriosam laudantium maxime nostrum optio possimus voluptate. Alias aperiam beatae cumque dicta dignissimos dolor ducimus earum eius enim et exercitationem facilis impedit incidunt itaque laboriosam laborum libero, modi, natus nesciunt nobis numquam quam, quasi reiciendis reprehenderit saepe sequi soluta unde. Aliquid atque aut autem beatae dolore, et facere, laborum nihil numquam odio omnis quae rerum tempore unde voluptate? Delectus distinctio dolorem dolores ducimus et eveniet fugiat, inventore iste laboriosam molestiae nam, necessitatibus nostrum odit, sapiente sed tempore unde voluptas voluptatum. Aut culpa dicta, fugiat ipsum magnam maiores nulla odio sequi unde vero. Aliquam animi aperiam assumenda blanditiis cum dignissimos dolor, dolores dolorum ea error et expedita illum in incidunt laudantium molestias nam, natus nihil non nulla odit officiis pariatur perspiciatis placeat possimus quae quibusdam quis, quisquam quod quos recusandae saepe tempore tenetur totam ullam velit vero? A accusamus ad aliquid architecto aspernatur, atque blanditiis corporis debitis dolore ducimus et facilis fugit hic impedit in labore magnam magni necessitatibus neque officiis, omnis placeat quo repellat sapiente similique totam vel vero vitae voluptatem voluptatum. Corporis distinctio rerum soluta! Accusamus, consequuntur possimus!</p>
+<!--            <p class="card-text"><small class="text-muted"><i>Последнее обновление 3 мин. назад</i></small></p>-->
+            <a href="{% url 'articles' %}" class="btn btn-primary btn-sm">Назад</a>
+            <a href="{% url 'article_update' articles.id %}" class="btn btn-warning btn-sm">Изменить</a>
+            <a href="{% url 'article_delete' articles.id %}" class="btn btn-danger btn-sm">Удалить</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="card mb-1">
+          <img src="{% static 'img/artic1.jpg' %}" class="card-img-top">
+          <div class="card-body">
+            <h4 class="card-text">{{ articles.anons }}</h4><br>
+            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, fugit, possimus? Ad adipisci debitis distinctio est. Aperiam dolore fugiat fugit impedit laboriosam laudantium maxime nostrum optio possimus voluptate. Alias aperiam beatae cumque dicta dignissimos dolor ducimus earum eius enim et exercitationem facilis impedit incidunt itaque laboriosam laborum libero, modi, natus nesciunt nobis numquam quam, quasi reiciendis reprehenderit saepe sequi soluta unde. Aliquid atque aut autem beatae dolore, et facere, laborum nihil numquam odio omnis quae rerum tempore unde voluptate? Delectus distinctio dolorem dolores ducimus et eveniet fugiat, inventore iste laboriosam molestiae nam, necessitatibus nostrum odit, sapiente sed tempore unde voluptas voluptatum. Aut culpa dicta, fugiat ipsum magnam maiores nulla odio sequi unde vero. Aliquam animi aperiam assumenda blanditiis cum dignissimos dolor, dolores dolorum ea error et expedita illum in incidunt laudantium molestias nam, natus nihil non nulla odit officiis pariatur perspiciatis placeat possimus quae quibusdam quis, quisquam quod quos recusandae saepe tempore tenetur totam ullam velit vero? A accusamus ad aliquid architecto aspernatur, atque blanditiis corporis debitis dolore ducimus et facilis fugit hic impedit in labore magnam magni necessitatibus neque officiis, omnis placeat quo repellat sapiente similique totam vel vero vitae voluptatem voluptatum. Corporis distinctio rerum soluta! Accusamus, consequuntur possimus!</p>
+            <p class="card-text"><small class="text-body-secondary"><i>Дата публикации материала: {{ articles.date }}</i></small></p>
+            <a href="{% url 'articles' %}" class="btn btn-primary btn-sm">Назад</a>
+          </div>
+        </div>
+        {% endif %}
+     {% endif %}
+</div>
+{% endblock %}

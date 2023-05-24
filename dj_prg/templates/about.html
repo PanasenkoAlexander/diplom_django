@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+<!-- Подключение папки static -->
+{% load static %}
+
+{% block title %}О нас{% endblock %}
+
+{% block body %}
+<!--Блок карусели -->
+<div class="container">
+<!--    <br>-->
+      <div id="my_carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+          <!-- Управление нижними индикаторами перемотки -->
+          <div class="carousel-indicators">
+              <button type="button" data-bs-target="#my_carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#my_carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+              <button type="button" data-bs-target="#my_carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          </div>
+          <!-- Основное тело карусели -->
+          <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img src="{% static 'img/slider1_cr1.jpg' %}" class="d-block w-100">
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'img/slider_cr.jpg' %}" class="d-block w-100">
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'img/slider2_cr2.jpg' %}" class="d-block w-100">
+              </div>
+          </div>
+          <!-- Управление боковыми кнопками -->
+          <div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#my_carousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#my_carousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+          </div>
+      </div>
+</div>
+
+<div class="container">
+    <br>
+    <h2><b>Нас выбирает большинство, потому что мы лучшие на рынке оптики.</b></h2>
+    <br>
+    <h4 align="justify">Наш магазин предлагает широчайший ассортимент новой автомобильной оптики. Мы стараемся держать в наличии большой запас автомобильной оптики. Наш сайт работает с {{ year }} года и имеет более {{ workers }} высококвалифицированных продавцов. Мы представляем такие кампании, как <b>{{ companies }}</b> - это ведущие мировые производители оригинальной оптики. Разумные цены и отличное качество Вас приятно удивят и порадуют.</h4>
+    <br>
+    <h4 align="justify">В нашем <a href="products">каталоге</a> автомобильной оптики сосредоточены такие детали как: передние фары, противотуманные фары, задние фонари, указатели и повторители поворотов, габаритные фонари, фонари подсветки номера и др. Все изделия имеют оригинальную заводскую упаковку и надежную гарантию.</h4>
+    <br>
+</div>
+{% endblock %}

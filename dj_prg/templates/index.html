@@ -1,0 +1,80 @@
+<!-- Подключение базового шаблона -->
+{% extends "base.html" %}
+<!-- Подключение папки static -->
+{% load static %}
+
+{% block title %}
+Главная
+{% endblock %}
+
+<!-- Вставка в точку входа "body" -->
+{% block body %}
+<!-- Базовая проверка на Аутентификацию пользователя -->
+<!-- {{ user.is_authenticated }} - True/False вошли ли вы в аккаунт или нет-->
+<!-- {{ user.get_username }} - Username вошедшего аккаунта -->
+<br>
+<div class="container" align="justify">
+    {% if user.is_authenticated %}
+        {% if user.get_username == "admin" %}
+        <h4><b>Рады приветствовать Вас на сайте, <u><i>администратор</i></u>!</b></h4>
+        {% else %}
+        <h4><b>Рады приветствовать Вас на нашем сайте! Вы вошли как <u><i>пользователь</i></u> сайта.</b></h4>
+        {% endif %}
+        <br>
+        <h4>Зачастую, с течением времени оптика теряет свои характеристики. Мутнеют и выгорают стекла и отражатели, за счет чего снижается светопропускная способность оптики. Обычно полировка или ремонт - временная мера. Через непродолжительное время отремонтированная оптика начинает снова мутнеть, потеть и т.д.</h4>
+        <br>
+        <h4>Повреждение оптики в результате дорожно-транспортных происшествий - это второй случай когда может потребоваться покупка автомобильной оптики. Чаще всего страдают передние основные фары и противотуманки. Далее следуют конечно же задние фонари. В нашем
+            <a href="products">интернет-каталоге</a> содержится довольно обширный ассортимент товара, который Вы можете подобрать к своему авто.</h4>
+        <br>
+        <h4><b>Каталог автомобильной оптики по группам товаров:</b></h4>
+        <br>
+        <div class="row" align="center">
+            <div class="col-lg-3 col-sm-6">
+                <div class="card text-bg-secondary mb-3" style="width: 17rem;">
+                    <img src="{% static 'img/optika-pered.jpg' %}" class="card-img-top" alt="Передние фары">
+                    <div class="card-body">
+                        <h4><a href="/products" class="card-title text-centre" style="text-decoration: none;">Передние фары</a></h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card text-bg-secondary mb-3" style="width: 17rem;">
+                    <img src="{% static 'img/fonari-zad.jpg' %}" class="card-img-top" alt="Задние фары">
+                    <div class="card-body">
+                        <h4><a href="/products" class="card-title text-centre" style="text-decoration: none;">Задние фары</a></h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card text-bg-secondary mb-3" style="width: 17rem;">
+                    <img src="{% static 'img/ptf.jpg' %}" class="card-img-top" alt="Противотуманки">
+                    <div class="card-body">
+                        <h4><a href="/products" class="card-title text-centre" style="text-decoration: none;">Противотуманки</a></h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card text-bg-secondary mb-3" style="width: 17rem;">
+                    <img src="{% static 'img/ukazateli.jpg' %}" class="card-img-top" alt="Указатели">
+                    <div class="card-body">
+                        <h4><a href="/products" class="card-title text-centre" style="text-decoration: none;">Указатели</a></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
+    {% else %}
+    <h4><b>Рады приветствовать Вас на нашем сайте! Вы вошли как <u><i>гость</i></u>.</b></h4>
+    <h4>Предлагаем пройти регистрацию/авторизацию на сайте для пользования нашими услугами.</h4>
+    <br>
+    <h4>Зачастую, с течением времени оптика теряет свои характеристики. Мутнеют и выгорают стекла и отражатели, за счет чего снижается светопропускная способность оптики. Обычно полировка или ремонт - временная мера. Через непродолжительное время отремонтированная оптика начинает снова мутнеть, потеть и т.д.</h4>
+    <br>
+    <h4>Повреждение оптики в результате дорожно-транспортных происшествий - это второй случай когда может потребоваться покупка автомобильной оптики. Чаще всего страдают передние основные фары и противотуманки. Далее следуют конечно же задние фонари. В нашем
+        <a href="#">интернет-каталоге</a> содержится довольно обширный ассортимент товара, который Вы можете подобрать к своему авто.</h4>
+    {% endif %}
+</div>
+{% endblock body %}
