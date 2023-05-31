@@ -21,14 +21,14 @@ class Registration(forms.Form):
 # Переназначение профиля пользователя (на основе наследования)
 class UserProfile(UserChangeForm):
     image = forms.ImageField(label="Изображение", widget=forms.FileInput(attrs={'type': 'file', 'class': 'form-control'}), required=False)
-    username = forms.CharField(label="Никнейм", max_length=10, widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'id': "floatingInput", "placeholder": "Username"}))
+    username = forms.CharField(label="Никнейм", max_length=10, widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'id': "floatingInput", "placeholder": "Username", 'readonly': True}))
     email = forms.EmailField(label="Email", widget=forms.widgets.EmailInput(
-        attrs={'type': 'email', 'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'login@example.com'}))
+        attrs={'type': 'email', 'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'login@example.com', 'readonly': True}))
 
     class Meta:
         model = User
-        fields = "__all__"
-        # fields = ('image', 'username', 'email')
+        # fields = "__all__"  # вот где была загвоздка
+        fields = ('image', 'username', 'email')
 
 
 # Создание формы Добавление статьи

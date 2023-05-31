@@ -54,7 +54,7 @@ def profile(request):
         if form.is_valid():
             form.save()
             print("Успешно")
-            return HttpResponseRedirect(reverse('accounts/profile'))
+            return HttpResponseRedirect(reverse('profile'))
         else:
             print(form.errors)
     else:
@@ -131,6 +131,31 @@ def agreement(request):
 #             kwargs = {"title": title, "anons": anons, "summary": summary, "date": date, "image": image}
 #             DataBase.write(model=Articles, **kwargs)  # Запись в БД
 #         return redirect("articles")
+
+# НЕ РАБОТАЕТ
+# def search(request):
+#     search_get = request.GET.get('search', '')
+#     if search_get:
+#         Articles.objects.filter(title__icontains=search_get)
+#     else:
+#         Articles.objects.all()
+#     # return HttpResponseRedirect('articles')
+#     return redirect(request, "templates/dj_app/articles_list.html")
+
+# НЕ РАБОТАЕТ
+# class Search(ListView):
+#     model = Articles  # Модель читаемая для шаблона
+#     template_name = "dj_app/articles_list.html"
+#     context_object_name = 'articles'
+#     paginate_by = 5  # Сколько объектов будет передано в шаблон
+#
+#     def search_articles(self):
+#         return Articles.objects.filter(title__iregex=self.request.GET.get('search'))
+#
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['search'] = self.request.GET.get('search')
+#         return context
 
 
 # Список всех статей (Автоматически генерируется при помощи ListView)

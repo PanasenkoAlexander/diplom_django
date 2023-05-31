@@ -16,10 +16,10 @@ urlpatterns = [
     path('rating', views.rating, name="rating"),  # Маршрут: Рейтинг
     path('agreement', views.agreement, name="agreement"),  # Маршрут: Пользовательские условия
 
-    path('accounts/profile', views.profile, name="profile"),  # Маршрут: Профиль
+    path('profile', views.profile, name="profile"),  # Маршрут: Профиль
     path('accounts/login/', views.LoginUser.as_view(), name="login"),  # Маршрут для входа/выхода (Переназначение)
     path('accounts/', include("django.contrib.auth.urls")),  # Маршрут для работы с аккаунтами
-    path('accounts/registration', views.registration, name="registration"),  # Маршрут: Регистрация
+    path('registration', views.registration, name="registration"),  # Маршрут: Регистрация
 
     path('articles', views.ArticlesListView.as_view(), name="articles"),  # Маршрут: Все Статьи
     path('article/<int:pk>', views.ArticlesDetailView.as_view(), name="article"),  # Маршрут: Конкретная статья

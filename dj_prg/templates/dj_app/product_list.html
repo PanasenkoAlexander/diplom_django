@@ -16,7 +16,7 @@
         <div class="col">
             <div class="card mx-auto h-100" style="width: 18rem;">
                 <a href="{{ product.get_absolute_url }}">
-                    <img src="/media/{{ product.image }}" class="card-img-top" alt="image.url">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="image.url">
                 </a>
                 <div class="card-body">
                     <h5 class="card-title"><b>{{ product.title }}</b></h5>
