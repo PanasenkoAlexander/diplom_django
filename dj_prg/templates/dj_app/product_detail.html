@@ -13,7 +13,7 @@
     <div class="col">
         <div class="card h-100" style="width: 20rem;">
             <a href="{{ product.get_absolute_url }}">
-                <img src="/media/{{ product.image }}" class="card-img-top" alt="Фото">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="Фото">
             </a>
             <div class="card-body">
                 <h4 class="card-title"><b>{{ product.title }}</b></h4>

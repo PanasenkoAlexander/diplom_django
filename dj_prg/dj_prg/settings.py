@@ -16,11 +16,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DOMAIN_NAME = 'http://localhost:8000/'
 
 # Application definition
 
 INSTALLED_APPS = [
     'dj_app',
+    'dbbackup',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,6 +30,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / 'backup'}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,6 +69,7 @@ WSGI_APPLICATION = 'dj_prg.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# SETTINGS FOF SQLITE
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -71,6 +77,17 @@ DATABASES = {
     }
 }
 
+# SETTINGS FOR POSTGRESSQL
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "website_db",
+#         "USER": "store_username",
+#         "PASSWORD": "324665",
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -95,13 +112,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'ru-ru'
-
 TIME_ZONE = 'Europe/Minsk'
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -125,14 +139,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # EMAIL
 # Для симуляции отправки почты в консоль.
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-# Для НАСТОЯЩЕЙ отправки почты
+# Для НАСТОЯЩЕЙ отправки почты (первая версия)
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # EMAIL_HOST = "smtp.mail.ru"
 # EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False
-# EMAIL_PORT = 465 # (в зависимости от почты, 587)
+# EMAIL_PORT = 465 # (номер порта зависит от почты)
 # EMAIL_HOST_USER = "сама почта"
 # EMAIL_HOST_PASSWORD = "пароль от почты"
 
+# Версия от volker
+# EMAIL_HOST = "smtp.yandex.com"
+# EMAIL_PORT = 465
+# EMAIL_USE_SSL = True
+# EMAIL_HOST_USER = "рабочая почта"
+# EMAIL_HOST_PASSWORD = "пароль от рабочей почты"
+
 # Users (при расширении базовой модели)
 AUTH_USER_MODEL = 'dj_app.User'
+LOGIN_URL = '/login/'
+# LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'

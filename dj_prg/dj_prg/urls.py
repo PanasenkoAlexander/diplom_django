@@ -4,6 +4,7 @@ from dj_app import views
 from django.conf.urls.static import static  # Для обработки картинок
 from django.conf import settings  # Для обработки картинок
 
+
 admin.site.site_header = "Django админка"
 admin.site.index_title = "Моя админ-панель"
 
@@ -19,7 +20,8 @@ urlpatterns = [
     path('profile', views.profile, name="profile"),  # Маршрут: Профиль
     path('accounts/login/', views.LoginUser.as_view(), name="login"),  # Маршрут для входа/выхода (Переназначение)
     path('accounts/', include("django.contrib.auth.urls")),  # Маршрут для работы с аккаунтами
-    path('registration', views.registration, name="registration"),  # Маршрут: Регистрация
+    # path('registration', views.registration, name="registration"),  # Маршрут: Регистрация (самописный)
+    path('registration', views.Registration.as_view(), name="registration"),  # Маршрут: Регистрация
 
     path('articles', views.ArticlesListView.as_view(), name="articles"),  # Маршрут: Все Статьи
     path('article/<int:pk>', views.ArticlesDetailView.as_view(), name="article"),  # Маршрут: Конкретная статья
@@ -29,7 +31,14 @@ urlpatterns = [
     path('article/<int:pk>/delete', views.ArticlesDeleteView.as_view(), name="article_delete"),  # Маршрут: Удаление статьи
 
     path('products', views.ProductListView.as_view(), name="products"),  # Маршрут: Все товары
+    path('products/category/<int:category_id>', views.ProductListView.as_view(), name="category"),  # Маршрут: Категория товара
     path('product/<int:pk>', views.ProductDetailView.as_view(), name="product"),  # Маршрут: Конкретный товар
+
+    path('basket', views.basket, name="basket"),  # Маршрут: Корзина товаров
+    path('basket/add/<int:product_id>', views.add_basket, name="add_basket"),  # Маршрут: Добавление товара в корзину
+    path('basket/delete/<int:basket_id>', views.delete_basket, name="delete_basket"),  # Маршрут: Удаление товара из корзины
+
+    path('verify/<str:email>/<uuid:code>/', views.EmailVerificationView.as_view(), name='email_verification'),  # Маршрут: Верификация
 ]
 
 # Для обработки картинок - Настройка на уровне разработки

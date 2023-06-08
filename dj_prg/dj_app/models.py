@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser  # Импортируем встроенную модель "Пользователи"
 from django.core.validators import RegexValidator  # Для сохранения номера телефона
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+from django.utils.timezone import now
 # from phonenumber_field.modelfields import PhoneNumberField  # Для номера телефона с префиксом
 
 # Commands for migrations:
@@ -11,9 +15,10 @@ from django.core.validators import RegexValidator  # Для сохранения
 # Модель User (для создания страницы с профилем)
 class User(AbstractUser):
     image = models.ImageField(upload_to='user_img', null=True, blank=True, verbose_name="Добавить изображение")
+    is_verified_email = models.BooleanField(default=False)
 
 
-# Модель Компания (главная таблица)
+# Модель Компания (Company)
 class Company(models.Model):
     name = models.CharField(max_length=30, verbose_name="Название компании")
     objects = models.Model
@@ -78,7 +83,7 @@ class GroupProduct(models.Model):
         ordering = ["view"]  # Сортировка по полю (если с "-" то в обратном порядке)
 
 
-# Модель Продукт (второстепенная таблица)
+# Модель Продукт
 class Product(models.Model):
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, help_text="Выберите компанию", verbose_name="Компания")  # Связывающее поле
     slug = models.SlugField(max_length=200, db_index=True, blank=True, verbose_name="url")
@@ -88,7 +93,8 @@ class Product(models.Model):
     manufacturer = models.ForeignKey(Country, null=True, on_delete=models.CASCADE, max_length=20, help_text="Введите страну производителя", verbose_name="Страна производителя")
     price = models.DecimalField(null=True, max_digits=5, decimal_places=2, help_text="Введите цену товара", verbose_name="Цена товара")
     quantity = models.PositiveIntegerField(default=0, help_text="Введите количество товара", verbose_name="Количество товара")
-    view = models.ForeignKey(GroupProduct, related_name='products', null=True, on_delete=models.CASCADE, help_text="Выберите вид (категорию) товара", verbose_name="Вид (категория) товара")
+    # НУЖНО СМЕНИТЬ НАЗВАНИЕ КАТЕГОРИИ (ВИДА) ТОВАРА ВО ИЗБЕЖАНИЕ ПУТАНИЦЫ ПЕРЕД СЛЕД. МИГРАЦИЕЙ \ DONE
+    category = models.ForeignKey(GroupProduct, related_name='products', null=True, on_delete=models.CASCADE, help_text="Выберите вид (категорию) товара", verbose_name="Вид (категория) товара")
     side = models.ForeignKey(Side, null=True, on_delete=models.CASCADE, help_text="Выберите сторону", verbose_name="Сторона")
     image = models.ImageField(upload_to='products/%Y/%m/%d', null=True, blank=True, verbose_name="Добавить изображение")
     available = models.BooleanField(default=True)
@@ -108,6 +114,49 @@ class Product(models.Model):
         verbose_name_plural = "Продукты"  # Название модели в мнж.числе
         ordering = ["title"]  # Сортировка по полю (если с "-" то в обратном порядке)
         index_together = (('id', 'slug'),)
+
+
+# Дополнительный менеджер к модели Корзина
+class BasketQuerySet(models.QuerySet):
+    def total_sum(self):
+        return sum(basket.sum() for basket in self)
+
+    def total_quantity(self):
+        return sum(basket.quantity for basket in self)
+
+    def stripe_products(self):
+        line_items = []
+        for basket in self:
+            item = {
+                'price': basket.product.stripe_product_price_id,
+                'quantity': basket.quantity,
+            }
+            line_items.append(item)
+        return line_items
+
+
+# Модель Корзина (Basket)
+class Basket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
+    quantity = models.PositiveSmallIntegerField(default=0, verbose_name="Количество")
+    created_timestamp = models.DateTimeField(auto_now_add=True)
+    # objects = models.Model
+    # переопределение стандартного objects в классе BasketQuerySet
+    objects = BasketQuerySet.as_manager()
+
+    # При просмотре всей модели из админки (поле которое будет отображаться в таблице)
+    def __str__(self):
+        return f'Корзина для {self.user} | Продукт: {self.product.title}'
+
+    def sum(self):
+        return self.product.price * self.quantity
+
+    # НАСТРОЙКИ перевода модели и сортировки объектов на главной таблице
+    class Meta:
+        verbose_name = "Корзина"  # Название модели в ед.числе
+        verbose_name_plural = "Корзины"  # Название модели в мнж.числе
+        ordering = ["product"]  # Сортировка по полю (если с "-" то в обратном порядке)
 
 
 # Модель Статьи
@@ -155,3 +204,35 @@ class Feedback(models.Model):
         verbose_name = "Обращение"  # Название модели в ед.числе
         verbose_name_plural = "Обращения"  # Название модели в мнж.числе
         ordering = ["-email"]  # Сортировка по полю (если с "-" то в обратном порядке)
+
+
+# Модель верификации почтового ящика
+class EmailVerification(models.Model):
+    code = models.UUIDField(unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    expiration = models.DateTimeField()
+    objects = models.Model
+
+    def __str__(self):
+        return f'EmailVerification object for {self.user.email}'
+
+    def send_verification_email(self):
+        link = reverse('users:email_verification', kwargs={'email': self.user.email, 'code': self.code})
+        verification_link = f'{settings.DOMAIN_NAME}{link}'
+        subject = f'Подверждение учетной записи для {self.user.username}'
+        message = 'Для подверждения учетной записи для {} перейдите по ссылке: {}'.format(
+            self.user.email,
+            verification_link
+        )
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[self.user.email],
+            fail_silently=False,
+        )
+
+    # Метод на проверку просрочена ли ссылка или нет
+    def is_expired(self):
+        return True if now() >= self.expiration else False

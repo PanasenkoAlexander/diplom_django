@@ -1,9 +1,10 @@
+from django.contrib.auth.decorators import login_required  # Для перенаправления гостя на авторизацию
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from .forms import *
 from .models import *
 from rating_far import RatingFar  # использование парсинга
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView  # Для авто чтения модели
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView  # Для входа/выхода
 from django.db.utils import IntegrityError  # Импорт ошибки при регистрации
 from django.core.mail import EmailMultiAlternatives  # Импорт для боевой отправки по почте
@@ -23,34 +24,43 @@ class LoginUser(LoginView):
 
 
 # Метод Формы регистрации
-def registration(request):
-    if request.method == "GET":
-        form = Registration()  # Создать форму
-        context = {"form": form}  # Генерация context
-        # Показываем шаблон
-        return render(request, "registration/registration.html", context=context)
-    if request.method == "POST":
-        # Получаем данные из формы
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        email = request.POST.get("email")
-        # Записываем данные в БД (нового пользователя)
-        try:
-            User.objects.create_user(username, email, password).save()
-            context = {"username": username}  # Генерация context
-            # Показываем шаблон
-            return render(request, "registration/registration.html", context=context)
-        # В случае если логин нового пользователя уже есть в БД
-        except IntegrityError:
-            context = {"error": username}  # Генерация context
-            # Показываем шаблон
-            return render(request, "registration/registration.html", context=context)
+class Registration(CreateView):
+    model = User
+    form_class = RegistrationForm
+    template_name = 'registration/registration.html'
+    success_url = reverse_lazy('login')  # в принципе не нужна пока, логика (пока не работает) описана в html
+
+
+# # Метод Формы регистрации (самописный функциональный метод, аналогичный классовому CreateView)
+# def registration(request):
+#     if request.method == "GET":
+#         form = Registration()  # Создать форму
+#         context = {"form": form}  # Генерация context
+#         # Показываем шаблон
+#         return render(request, "registration/registration.html", context=context)
+#     if request.method == "POST":
+#         # Получаем данные из формы
+#         username = request.POST.get("username")
+#         password = request.POST.get("password")
+#         email = request.POST.get("email")
+#         # Записываем данные в БД (нового пользователя)
+#         try:
+#             User.objects.create_user(username, email, password).save()
+#             context = {"username": username}  # Генерация context
+#             # Показываем шаблон
+#             return render(request, "registration/registration.html", context=context)
+#         # В случае если логин нового пользователя уже есть в БД
+#         except IntegrityError:
+#             context = {"error": username}  # Генерация context
+#             # Показываем шаблон
+#             return render(request, "registration/registration.html", context=context)
 
 
 # Метод страницы Профиль
+@login_required
 def profile(request):
     if request.method == 'POST':
-        form = UserProfile(instance=request.user, data=request.POST, files=request.FILES)
+        form = UserProfileForm(instance=request.user, data=request.POST, files=request.FILES)
         if form.is_valid():
             form.save()
             print("Успешно")
@@ -58,7 +68,7 @@ def profile(request):
         else:
             print(form.errors)
     else:
-        form = UserProfile(instance=request.user)
+        form = UserProfileForm(instance=request.user)
     context = {"form": form}
     return render(request, "registration/profile.html", context=context)
 
@@ -112,7 +122,42 @@ def agreement(request):
     return render(request, "agreement.html")
 
 
-# Метод добавления статей (самописный запасной вместо CreateView)
+# Метод страницы Корзина
+def basket(request):
+    baskets = Basket.objects.filter(user=request.user)  # забираю нужные значения по корзине из модели
+    total_sum = 0
+    total_quantity = 0
+    for basket in baskets:
+        total_sum += basket.sum()
+        total_quantity += basket.quantity
+    context = {"baskets": baskets, "total_sum": total_sum, "total_quantity": total_quantity}
+    return render(request, "basket.html", context=context)
+
+
+# Метод Добавления товара в корзину
+# декоратор @login_required используется для отправки на авторизацию
+@login_required
+def add_basket(request, product_id):
+    product = Product.objects.get(id=product_id)  # забираю все данные по продукту
+    baskets = Basket.objects.filter(user=request.user, product=product)  # передаю в корзину данные по продукту и юзеру
+    if not baskets.exists():
+        Basket.objects.create(user=request.user, product=product, quantity=1)
+    else:
+        basket = baskets.first()
+        basket.quantity += 1
+        basket.save()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])  # возврат на ту же страницу
+
+
+# Метод Добавления товара в корзину
+@login_required
+def delete_basket(request, basket_id):
+    basket = Basket.objects.get(id=basket_id)  # забираю все данные по продуктам в корзине
+    basket.delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])  # возврат на ту же страницу
+
+
+# Метод добавления статей (самописный функциональный метод, аналогичный классовому CreateView)
 # def add_articles(request):
 #     if request.method == "GET":
 #         form = ArticlesForm()  # Создание формы
@@ -180,12 +225,41 @@ class ProductListView(ListView):
     model = Product  # Модель читаемая для шаблона
     paginate_by = 6  # Сколько объектов будет передано в шаблон
 
+    # Фильтруем по нужным категориям товаров
+    def get_queryset(self):
+        queryset = super(ProductListView, self).get_queryset()
+        category_id = self.kwargs.get('category_id')
+        return queryset.filter(category_id=category_id) if category_id else queryset
+
+    # Отбираем и показываем нужный context
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProductListView, self).get_context_data()
+        context['categories'] = GroupProduct.objects.all()
+        return context
+
 
 # Конкретная статья (Автоматически генерируется при помощи DetailView)
 # Шаблон: "templates/dj_app/product_detail.html"
 # Переменная (шаблона/ключ): "product"
 class ProductDetailView(DetailView):
     model = Product
+
+
+# Верификация через почтовый ящик
+class EmailVerificationView(TemplateView):
+    title = 'Store - Подтверждение электронной почты'
+    template_name = 'users/email_verification.html'
+
+    def get(self, request, *args, **kwargs):
+        code = kwargs['code']
+        user = User.objects.get(email=kwargs['email'])
+        email_verifications = EmailVerification.objects.filter(user=user, code=code)
+        if email_verifications.exists() and not email_verifications.first().is_expired():
+            user.is_verified_email = True
+            user.save()
+            return super(EmailVerificationView, self).get(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse('index'))
 
 
 # Класс содержащий ВНУТРЕННЮЮ работу с БД
@@ -223,15 +297,6 @@ class DataBase:
     # Удаление из таблицы "model" записи, удовлетворяющей фильтру переданному в {} через "kwargs"
     def delete(model, **kwargs):
         model.objects.filter(**kwargs).delete()
-
-    # @staticmethod
-    # # Создание нового пользователя "login" "password" "email"
-    # def create_user(login, password, email):
-    #     # DataBase.create_user("moderator2", "12345", "david@ewfi.com")
-    #     try:
-    #         User.objects.create_user(login, email, password).save()
-    #     except IntegrityError:
-    #         pass
 
     @staticmethod
     # Преобразование queryset в list в зависимости от режима "mode"

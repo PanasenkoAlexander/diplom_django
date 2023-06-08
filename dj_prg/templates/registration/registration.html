@@ -37,10 +37,18 @@
         {% if form %}
         <div class="container col-xl-10 col-xxl-8 px-4"> <!-- Главный контейнер -->
             <div class="row align-items-center g-lg-5">  <!-- Первая строка -->
-    <!--            <div class="col-4"></div>  &lt;!&ndash; Левая пустая часть (3 позиции) &ndash;&gt;-->
+<!--                Настройка уведомлений с ошибками-->
+                {% if form.errors %}
+                   <div class="alert alert-dark alert-dismissible fade show col-9 mx-auto" role="alert" style="margin-top: 30px;">
+                    {{ form.errors }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                   </div>
+                {% endif %}
+
+<!--                <div class="col-4"></div>  &lt;!&ndash; Левая пустая часть (3 позиции) &ndash;&gt;-->
                 <div class="col-lg-7 text-center text-lg-start text-white">
-                <h1 class="display-4 fw-bold lh-1 mb-3"><br>Пройдите регистрацию и окунитесь в мир качественной автомобильной оптики</h1>
-                <p class="col-lg-10 fs-4">На нашем сайте Вы сможете найти самое современное оптическое оборудование, необходимые для Вашего автомобиля.</p>
+                    <h1 class="display-4 fw-bold lh-1 mb-3"><br>Пройдите регистрацию и окунитесь в мир качественной автомобильной оптики</h1>
+                    <p class="col-lg-10 fs-4">На нашем сайте Вы сможете найти самое современное оптическое оборудование, необходимые для Вашего автомобиля.</p>
                 </div>
 
                 <div class="col-md-10 mx-auto col-lg-5">
@@ -62,11 +70,16 @@
                         </div>
                         <!-- Третье поле (Пароль) -->
                         <div class="form-floating mb-2">
-                            {{ form.password }}
-                            <label for="floatingPassword">{{ form.password.label }}:</label>
+                            {{ form.password1 }}
+                            <label for="floatingPassword">{{ form.password1.label }}:</label>
+                        </div>
+                        <!-- Четвертое поле (Подтверждение пароля) -->
+                        <div class="form-floating mb-2">
+                            {{ form.password2 }}
+                            <label for="floatingPassword">{{ form.password2.label }}:</label>
                         </div>
                         <!-- КНОПКА ОТПРАВКИ --> <button class="w-100 btn btn-lg btn-warning" type="submit">Отправить</button>
-                        <hr class="my-4">
+                        <hr class="my-2">
                         <small class="text-white">Нажимая кнопку "Отправить", Вы соглашаетесь с <a href="{% url 'agreement' %}">пользовательскими условиями.</a></small>
                     </form>
                 </div>  <!-- Центральная часть -->

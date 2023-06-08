@@ -1,6 +1,9 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 from .models import *
+from datetime import timedelta
+from django.utils.timezone import now
+import uuid
 # from phonenumber_field.formfields import PhoneNumberField  # для иного способа поля с телефоном
 # from phonenumber_field.widgets import PhoneNumberPrefixWidget  # для иного способа поля с телефоном с префиксом
 
@@ -11,15 +14,35 @@ class Login(AuthenticationForm):
     password = forms.CharField(label="Пароль", widget=forms.widgets.PasswordInput(attrs={'class': 'form-control', 'id': "floatingInput", "placeholder": "Password"}))
 
 
-# Создание формы Регистрации
-class Registration(forms.Form):
-    username = forms.CharField(label="Username", required=False, max_length=10, widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'Username'}))
-    password = forms.CharField(label="Password", required=True, widget=forms.widgets.PasswordInput(attrs={'type': 'password', 'class': 'form-control', 'id': 'floatingPassword', 'placeholder': 'Password'}))
+# Создание формы Регистрации (при классовом методе)
+class RegistrationForm(UserCreationForm):
+    username = forms.CharField(label="Логин", required=False, max_length=15, widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'Username'}))
     email = forms.EmailField(label="Email", required=True, widget=forms.widgets.EmailInput(attrs={'type': 'email', 'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'name@example.com'}))
+    password1 = forms.CharField(label="Пароль", required=True, widget=forms.widgets.PasswordInput(attrs={'type': 'password', 'class': 'form-control', 'id': 'floatingPassword', 'placeholder': 'Password'}))
+    password2 = forms.CharField(label="Подтверждение пароля", required=True, widget=forms.widgets.PasswordInput(attrs={'type': 'password', 'class': 'form-control', 'id': 'floatingPassword', 'placeholder': 'Password'}))
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
+
+    # функция для верификации почтового ящика
+    def save(self, commit=True):
+        user = super(RegistrationForm, self).save(self, commit=True)
+        expiration = now() + timedelta(hours=48)
+        record = EmailVerification.objects.create(code=uuid.uuid4(), user=user, expiration=expiration)
+        record.send_verification_email()
+        return user
+
+
+# # Создание формы Регистрации (при функциональном методе)
+# class Registration(forms.Form):
+#     username = forms.CharField(label="Username", required=False, max_length=10, widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'Username'}))
+#     password = forms.CharField(label="Password", required=True, widget=forms.widgets.PasswordInput(attrs={'type': 'password', 'class': 'form-control', 'id': 'floatingPassword', 'placeholder': 'Password'}))
+#     email = forms.EmailField(label="Email", required=True, widget=forms.widgets.EmailInput(attrs={'type': 'email', 'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'name@example.com'}))
 
 
 # Переназначение профиля пользователя (на основе наследования)
-class UserProfile(UserChangeForm):
+class UserProfileForm(UserChangeForm):
     image = forms.ImageField(label="Изображение", widget=forms.FileInput(attrs={'type': 'file', 'class': 'form-control'}), required=False)
     username = forms.CharField(label="Никнейм", max_length=10, widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'id': "floatingInput", "placeholder": "Username", 'readonly': True}))
     email = forms.EmailField(label="Email", widget=forms.widgets.EmailInput(

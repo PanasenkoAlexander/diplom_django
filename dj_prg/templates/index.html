@@ -15,7 +15,7 @@
 <br>
 <div class="container" align="justify">
     {% if user.is_authenticated %}
-        {% if user.get_username == "admin" %}
+        {% if user.is_superuser %}
         <h4><b>Рады приветствовать Вас на сайте, <u><i>администратор</i></u>!</b></h4>
         {% else %}
         <h4><b>Рады приветствовать Вас на нашем сайте! Вы вошли как <u><i>пользователь</i></u> сайта.</b></h4>

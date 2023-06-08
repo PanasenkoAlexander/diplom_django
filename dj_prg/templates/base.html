@@ -32,32 +32,21 @@
             </a>
 <!--            Разграничение доступа-->
             {% if user.is_authenticated %}
-                {% if user.get_username == "admin" %}
-                <ul class="nav col-12 col-lg-auto mx-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="{% url 'index' %}" class="nav-link px-2 text-white">Главная</a></li>
-                    <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">О нас</a></li>
-                    <li><a href="{% url 'contacts' %}" class="nav-link px-2 text-white">Контакты</a></li>
-                    <li><a href="{% url 'products' %}" class="nav-link px-2 text-white">Каталог</a></li>
-                    <li><a href="{% url 'articles' %}" class="nav-link px-2 text-white">Статьи</a></li>
-                    <li><a href="{% url 'rating' %}" class="nav-link px-2 text-white">Рейтинг</a></li>
-                    <li><a href="admin/" class="nav-link px-2 text-white">Админка</a></li>
-                </ul>
-                <ul class="nav col-12 col-lg-auto ms-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="{% url 'profile' %}" class="nav-link px-2 text-white"><i class="fa-regular fa-circle-user fa-xl"></i> {{ user.get_username }}</a></li>
-                </ul>
-                {% else %}
-                <ul class="nav col-12 col-lg-auto mx-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="{% url 'index' %}" class="nav-link px-2 text-white">Главная</a></li>
-                    <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">О нас</a></li>
-                    <li><a href="{% url 'contacts' %}" class="nav-link px-2 text-white">Контакты</a></li>
-                    <li><a href="{% url 'products' %}" class="nav-link px-2 text-white">Каталог</a></li>
-                    <li><a href="{% url 'articles' %}" class="nav-link px-2 text-white">Статьи</a></li>
-                    <li><a href="{% url 'rating' %}" class="nav-link px-2 text-white">Рейтинг</a></li>
-                </ul>
-                <ul class="nav col-12 col-lg-auto ms-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="{% url 'profile' %}" class="nav-link px-2 text-white"><i class="fa-regular fa-circle-user fa-xl"></i> {{ user.get_username }}</a></li>
-                </ul>
+            <ul class="nav col-12 col-lg-auto mx-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="{% url 'index' %}" class="nav-link px-2 text-white">Главная</a></li>
+                <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">О нас</a></li>
+                <li><a href="{% url 'contacts' %}" class="nav-link px-2 text-white">Контакты</a></li>
+                <li><a href="{% url 'products' %}" class="nav-link px-2 text-white">Каталог</a></li>
+                <li><a href="{% url 'articles' %}" class="nav-link px-2 text-white">Статьи</a></li>
+                <li><a href="{% url 'rating' %}" class="nav-link px-2 text-white">Рейтинг</a></li>
+                {% if user.is_superuser %}
+                <li><a href="admin/" class="nav-link px-2 text-white">Админка</a></li>
                 {% endif %}
+                <li><a href="{% url 'basket' %}" class="nav-link px-2 text-white">Корзина</a></li>
+            </ul>
+            <ul class="nav col-12 col-lg-auto ms-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="{% url 'profile' %}" class="nav-link px-2 text-white"><i class="fa-regular fa-circle-user fa-xl"></i> {{ user.get_username }}</a></li>
+            </ul>
             {% else %}
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="{% url 'index' %}" class="nav-link px-2 text-white">Главная</a></li>
