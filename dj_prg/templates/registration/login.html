@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load socialaccount %}
 <!-- Подключили саму папку static -->
 {% load static %}
 
@@ -23,7 +24,6 @@
     {% if form %}
     <div class="container col-xl-10 col-xxl-8 px-4"> <!-- Главный контейнер -->
         <div class="row align-items-center g-lg-5">  <!-- Первая строка -->
-<!--            <div class="col-4"></div>  &lt;!&ndash; Левая пустая часть (3 позиции) &ndash;&gt;-->
             <div class="col-lg-7 text-center text-lg-start text-white">
             <h1 class="display-4 fw-bold lh-1 mb-3"><br>Пройдите авторизацию и окунитесь в мир качественной автомобильной оптики</h1>
             <p class="col-lg-10 fs-4">На нашем сайте Вы сможете найти самое современное оптическое оборудование, необходимые для Вашего автомобиля.</p>
@@ -33,7 +33,7 @@
             <br><br>
                 <!-- --- ВСТАВКА ФОРМЫ --- -->
                 <!-- В "action" вставляем маршрут по которому будет обрабатываться эта форма -->
-                <form class="p-4 p-md-5 border rounded-3" method="post" action="">
+                <form class="p-4 p-md-4 border rounded-3" method="post" action="">
                     <!-- ЗАЩИТА ФОРМЫ    --> {% csrf_token %}
                     <!-- Вставка поля Login -->
                     <div class="form-floating mb-3">
@@ -51,8 +51,14 @@
                         <input type="checkbox" class="form-check-input"> Запомнить
                     </label>
                     </div>
-                    <!-- КНОПКА ОТПРАВКИ --> <button class="w-100 btn btn-lg btn-warning" type="submit">Войти</button>
-                    <hr class="my-4">
+                    <!-- КНОПКИ -->
+                    <button class="w-100 btn btn-lg btn-warning mb-3" type="submit">Войти</button>
+                    <a href="{% provider_login_url 'github' %}" class="w-100 btn btn-light"><i class="fab fa-github fa-2x"></i> Войти с помощью GitHub</a>
+                    <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <a href="{% url 'password_reset' %}" class="btn btn-sm btn-primary">Забыли пароль?</a>
+                        <a href="{% url 'registration' %}" class="btn btn-sm btn-primary">Нужен аккаунт?</a>
+                    </div>
+                    <hr class="my-3">
                     <small class="text-white">Нажимая кнопку "Войти", Вы соглашаетесь с <a href="{% url 'agreement' %}">пользовательскими условиями.</a></small>
                 </form>
             </div>  <!-- Центральная часть -->

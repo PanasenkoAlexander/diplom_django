@@ -22,13 +22,21 @@ DOMAIN_NAME = 'http://localhost:8000/'
 
 INSTALLED_APPS = [
     'dj_app',
-    'dbbackup',
+    'debug_toolbar',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+    'dbbackup',
+
 ]
 
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
@@ -42,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'dj_prg.urls'
@@ -65,6 +74,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dj_prg.wsgi.application'
 
+# Setting for debug_toolbar
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+# Settings for Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -77,7 +98,7 @@ DATABASES = {
     }
 }
 
-# SETTINGS FOR POSTGRESSQL
+# SETTINGS FOR POSTGRESQL
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -138,7 +159,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # EMAIL
 # Для симуляции отправки почты в консоль.
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # Для НАСТОЯЩЕЙ отправки почты (первая версия)
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # EMAIL_HOST = "smtp.mail.ru"
@@ -148,15 +169,35 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # EMAIL_HOST_USER = "сама почта"
 # EMAIL_HOST_PASSWORD = "пароль от почты"
 
-# Версия от volker
-# EMAIL_HOST = "smtp.yandex.com"
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True
-# EMAIL_HOST_USER = "рабочая почта"
-# EMAIL_HOST_PASSWORD = "пароль от рабочей почты"
+# volker_version
+EMAIL_HOST = "smtp.yandex.com"
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = "stradys@yandex.ru"
+EMAIL_HOST_PASSWORD = ""
 
 # Users (при расширении базовой модели)
 AUTH_USER_MODEL = 'dj_app.User'
 LOGIN_URL = '/login/'
 # LOGIN_REDIRECT_URL = '/'
 # LOGOUT_REDIRECT_URL = '/'
+
+# OAuth
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        'SCOPE': [
+            'user',
+        ],
+    }
+}
+
+# Celery
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'

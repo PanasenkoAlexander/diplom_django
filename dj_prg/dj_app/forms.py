@@ -1,9 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 from .models import *
-from datetime import timedelta
-from django.utils.timezone import now
-import uuid
+from .tasks import send_email_verification
 # from phonenumber_field.formfields import PhoneNumberField  # для иного способа поля с телефоном
 # from phonenumber_field.widgets import PhoneNumberPrefixWidget  # для иного способа поля с телефоном с префиксом
 
@@ -27,10 +25,8 @@ class RegistrationForm(UserCreationForm):
 
     # функция для верификации почтового ящика
     def save(self, commit=True):
-        user = super(RegistrationForm, self).save(self, commit=True)
-        expiration = now() + timedelta(hours=48)
-        record = EmailVerification.objects.create(code=uuid.uuid4(), user=user, expiration=expiration)
-        record.send_verification_email()
+        user = super(RegistrationForm, self).save(commit=True)
+        send_email_verification.delay(user.id)
         return user
 
 

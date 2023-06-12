@@ -58,9 +58,9 @@
 
             <div class="text-end">
                 {% if user.is_authenticated %}
-                    <a href="/accounts/logout"><button type="button" class="btn btn-outline-light btn-sm me-2"><b>Выйти</b></button></a>
+                    <a href="/logout"><button type="button" class="btn btn-outline-light btn-sm me-2"><b>Выйти</b></button></a>
                 {% else %}
-                    <a href="/accounts/login?next={{ request.path }}"><button type="button" class="btn btn-outline-light btn-sm me-2"><b>Войти</b></button></a>
+                    <a href="/login?next={{ request.path }}"><button type="button" class="btn btn-outline-light btn-sm me-2"><b>Войти</b></button></a>
                     <a href="{% url 'registration' %}"><button type="button" class="btn btn-warning btn-sm"><b>Зарегистрироваться</b></button></a>
                 {% endif %}
             </div>

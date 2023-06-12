@@ -49,6 +49,30 @@
     {% else %}
     <h2>Записи в БД отсутствуют</h2>
     {% endif %}
+
+    <!-- Раздел с категориями товаров -->
+<!--    <div class="col-lg-3">-->
+<!--        <h4 class="my-4">Категории</h4>-->
+<!--        ОКНО СО СПИСКОМ КАТЕГОРИЙ-->
+<!--        <div class="list-group">-->
+<!--            {% for category in categories %}-->
+<!--                <a href="{% url 'category' category.id %}" class="list-group-item">-->
+<!--&lt;!&ndash;                    отображение названий категорий&ndash;&gt;-->
+<!--                    {{ category.view }}-->
+<!--                </a>-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+
+<!--        Просто выбор категории из списка, но нету последующей обработки выбора, нужна кнопка "применить"-->
+<!--        <select class="form-select" aria-label="Выбор по умолчанию">-->
+<!--          <option selected>Выберите необходимую категорию</option>-->
+<!--            {% for category in categories %}-->
+<!--                <option selected>-->
+<!--                <a href="{% url 'category' category.id %}" class="form-select">{{ category.view }}</a>-->
+<!--                </option>-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+<!--    </div>-->
     <br>
     <!-- Кнопки перехода между страницами -->
     <!-- request.path - текущий URl страницы -->

@@ -13,8 +13,8 @@ from django.urls import reverse, reverse_lazy  # Для правильного �
 
 
 # Метод Главной страницы сайта
-def index(request):
-    return render(request, "index.html")
+class IndexView(TemplateView):
+    template_name = 'index.html'
 
 
 # Метод Входа(Авторизации)/Выхода
@@ -28,7 +28,7 @@ class Registration(CreateView):
     model = User
     form_class = RegistrationForm
     template_name = 'registration/registration.html'
-    success_url = reverse_lazy('login')  # в принципе не нужна пока, логика (пока не работает) описана в html
+    success_url = reverse_lazy('login')  # альтернатива перенаправления, описанного в html
 
 
 # # Метод Формы регистрации (самописный функциональный метод, аналогичный классовому CreateView)
@@ -247,8 +247,7 @@ class ProductDetailView(DetailView):
 
 # Верификация через почтовый ящик
 class EmailVerificationView(TemplateView):
-    title = 'Store - Подтверждение электронной почты'
-    template_name = 'users/email_verification.html'
+    template_name = 'registration/email_verification.html'
 
     def get(self, request, *args, **kwargs):
         code = kwargs['code']
