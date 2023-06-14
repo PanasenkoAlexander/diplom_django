@@ -16,7 +16,7 @@ urlpatterns = [
     path('about', views.about, name="about"),  # Маршрут: О нас
     path('contacts', views.contacts, name="contacts"),  # Маршрут: Контакты
     path('rating', views.rating, name="rating"),  # Маршрут: Рейтинг
-    path('agreement', views.agreement, name="agreement"),  # Маршрут: Пользовательские условия
+    path('agreement', views.Agreement.as_view, name="agreement"),  # Маршрут: Пользовательские условия
 
     path('profile', views.profile, name="profile"),  # Маршрут: Профиль
     path('login/', views.LoginUser.as_view(), name='login'),  # Маршрут Входа (Переназначение)
@@ -40,6 +40,8 @@ urlpatterns = [
     path('basket', views.basket, name="basket"),  # Маршрут: Корзина товаров
     path('basket/add/<int:product_id>', views.add_basket, name="add_basket"),  # Маршрут: Добавление товара в корзину
     path('basket/delete/<int:basket_id>', views.delete_basket, name="delete_basket"),  # Маршрут: Удаление товара из корзины
+
+    path('order-create', views.OrderCreateView.as_view(), name="order_create"),  # Маршрут: Заказ
 
     path('verify/<str:email>/<uuid:code>/', views.EmailVerificationView.as_view(), name='email_verification'),  # Маршрут: Верификация
 ]

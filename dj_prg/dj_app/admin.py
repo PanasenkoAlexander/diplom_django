@@ -100,3 +100,16 @@ class EmailVerificationAdmin(admin.ModelAdmin):
     list_display = ['code', 'user', 'expiration']
     fields = ['code', 'user', 'expiration', 'created']
     readonly_fields = ['created']
+
+
+# Регистрация и настройка модели Order
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'status')
+    fields = (
+        'id', 'created',
+        ('first_name', 'last_name'),
+        ('email', 'address'),
+        'basket_history', 'status', 'initiator',
+    )
+    readonly_fields = ('id', 'created')

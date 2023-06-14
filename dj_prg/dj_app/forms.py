@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 from .models import *
+import uuid
+from datetime import timedelta
+from django.utils.timezone import now
 from .tasks import send_email_verification
 # from phonenumber_field.formfields import PhoneNumberField  # для иного способа поля с телефоном
 # from phonenumber_field.widgets import PhoneNumberPrefixWidget  # для иного способа поля с телефоном с префиксом
@@ -26,7 +29,10 @@ class RegistrationForm(UserCreationForm):
     # функция для верификации почтового ящика
     def save(self, commit=True):
         user = super(RegistrationForm, self).save(commit=True)
-        send_email_verification.delay(user.id)
+        # send_email_verification.delay(user.id)  # настройка для работы с Celery
+        expiration = now() + timedelta(hours=48)
+        record = EmailVerification.objects.create(code=uuid.uuid4(), user=user, expiration=expiration)
+        record.send_verification_email()
         return user
 
 
@@ -69,3 +75,17 @@ class FeedbackForm(forms.Form):
     email = forms.EmailField(label="Email", required=True, widget=forms.widgets.EmailInput(attrs={'type': 'email', 'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'email'}))
     phoneNumber = forms.RegexField(regex=r'^\+?1?\d{8,15}$', label="Телефон", required=False, widget=forms.widgets.NumberInput(attrs={'type': 'phone', 'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'Номер телефона в формате +375__ ___ __ __'}))
     message = forms.CharField(label="Краткое сообщение (до 200 символов)", required=False, max_length=200, widget=forms.widgets.Textarea(attrs={'class': 'form-control', 'id': 'floatingInput', 'placeholder': 'Краткое сообщение'}))
+
+
+# Создание формы Заказа
+class OrderForm(forms.ModelForm):
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Иван'}))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Иванов'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'you@example.com'}))
+    address = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control', 'placeholder': 'Беларусь, Минск, ул. Мира, дом 5',
+    }))
+
+    class Meta:
+        model = Order
+        fields = ('first_name', 'last_name', 'email', 'address')

@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'dj_app.context_processors.baskets',  # свой глобальный процессор
             ],
         },
     },
@@ -165,7 +166,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # EMAIL_HOST = "smtp.mail.ru"
 # EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False
-# EMAIL_PORT = 465 # (номер порта зависит от почты)
+# EMAIL_PORT = 465  # (номер порта зависит от почты)
 # EMAIL_HOST_USER = "сама почта"
 # EMAIL_HOST_PASSWORD = "пароль от почты"
 

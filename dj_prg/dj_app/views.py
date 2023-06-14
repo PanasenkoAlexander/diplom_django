@@ -118,8 +118,8 @@ def rating(request):
 
 
 # Метод страницы Соглашение
-def agreement(request):
-    return render(request, "agreement.html")
+class Agreement(TemplateView):
+    template_name = 'agreement.html'
 
 
 # Метод страницы Корзина
@@ -259,6 +259,18 @@ class EmailVerificationView(TemplateView):
             return super(EmailVerificationView, self).get(request, *args, **kwargs)
         else:
             return HttpResponseRedirect(reverse('index'))
+
+
+# Метод Заказы
+class OrderCreateView(CreateView):
+    template_name = 'orders/order-create.html'
+    form_class = OrderForm
+    success_url = reverse_lazy('order_create')
+
+    # для поля с инициатором
+    def form_valid(self, form):
+        form.instance.initiator = self.request.user
+        return super(OrderCreateView, self).form_valid(form)
 
 
 # Класс содержащий ВНУТРЕННЮЮ работу с БД

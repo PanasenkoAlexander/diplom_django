@@ -135,7 +135,7 @@ class BasketQuerySet(models.QuerySet):
         return line_items
 
 
-# Модель Корзина (Basket)
+# Модель Корзина
 class Basket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
@@ -158,6 +158,38 @@ class Basket(models.Model):
         verbose_name_plural = "Корзины"  # Название модели в мнж.числе
         ordering = ["product"]  # Сортировка по полю (если с "-" то в обратном порядке)
 
+
+# Модель Заказ
+class Order(models.Model):
+    CREATED = 0
+    PAID = 1
+    ON_WAY = 2
+    DELIVERED = 3
+    STATUSES = (
+        (CREATED, 'Создан'),
+        (PAID, 'Оплачен'),
+        (ON_WAY, 'В пути'),
+        (DELIVERED, 'Доставлен'),
+    )
+
+    first_name = models.CharField(max_length=64, verbose_name="Имя")
+    last_name = models.CharField(max_length=64, verbose_name="Фамилия")
+    email = models.EmailField(max_length=256, verbose_name="Почтовый ящик")
+    address = models.CharField(max_length=256, verbose_name="Адрес доставки")
+    basket_history = models.JSONField(default=dict, verbose_name="История корзины")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
+    status = models.SmallIntegerField(default=CREATED, choices=STATUSES, verbose_name="Статус")
+    initiator = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Заказчик")
+
+    def __str__(self):
+        return f'Order #{self.id}. {self.first_name} {self.last_name}'
+
+        # НАСТРОЙКИ перевода модели и сортировки объектов на главной таблице
+
+    class Meta:
+        verbose_name = "Заказ"  # Название модели в ед.числе
+        verbose_name_plural = "Заказы"  # Название модели в мнж.числе
+        ordering = ["created"]  # Сортировка по полю (если с "-" то в обратном порядке)
 
 # Модель Статьи
 class Articles(models.Model):
